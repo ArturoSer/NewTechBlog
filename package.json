@@ -16,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/ArturoSer/NewTechBlog/issues"
   },
-  "homepage": "https://github.com/ArturoSer/NewTechBlog#readme"
+  "homepage": "https://github.com/ArturoSer/NewTechBlog#readme",
+  "dependencies": {
+    "nodemon": "^2.0.20"
+  }
 }
