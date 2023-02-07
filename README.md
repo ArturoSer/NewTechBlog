@@ -1,5 +1,14 @@
 # NewTechBlog
 
+## Table of Contents
+- Description
+- User Story
+- Acceptanced Criteria
+- Usage
+
+## Description
+This app will allow users to create and post their blogs about different things they are working on and also have the ability to comment on theirs as well.  
+
 ## User Story
 
 ```md
@@ -45,3 +54,6 @@ THEN I am signed out of the site
 WHEN I am idle on the site for more than a set time
 THEN I am able to view comments but I am prompted to log in again before I can add, update, or delete comments
 ```
+
+## Usage
+To be able to use this system just go to 'https://newtechas.herokuapp.com/' and there you will be able to see the site yourself! Enjoy 😁
