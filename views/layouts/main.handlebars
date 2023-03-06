@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Techa Blooggg</title>
+    <link rel="stylesheet" href="/publc/css/style.css">
+</head>
+
+<body>
+    <div class="wrapper">
+        <header>
+            <h1>Tech Blog</h1>
+            <nav>
+                <a href="/" class="btn btn-dark">Home</a>
+                <a href="/dashboard" class="btn btn-dark">Dashboard</a>
+                {{#if loggedIn}}
+                <button id="logout" class="btn btn-dark">Logout</button>
+                {{else}}
+                <a href="/login" class="btn btn-dark">Login</a>
+                {{/if}}
+            </nav>
+        </header>
+        <main>
+            {{{ body }}}
+        </main>
+        <footer>
+            Arturo Serrato 2023🚀
+        </footer>
+    </div>
+    {{#if loggedIn}}
+    <script src="/publc/js/logout.js"></script>
+</body>
+
+</html>
