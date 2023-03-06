@@ -1,72 +1,74 @@
 const router = require("express").Router();
-const { Project, User } = require("../models");
-const withAuth = require("../utils/auth");
+const { Post, User, Comment } = require("../models");
 
-router.get("/", async (req, res) => {
-    try {
-        const projectData = await Project.findAll({
-            include: [
-                {
+
+router.get('/', (req, res) => {
+    Post.findAll({
+        attributes: ['id', 'title', 'body', 'created_at'],
+        inclue: [
+            {
+                model: Comment,
+                attributes: ['id', 'comment_text', 'post_id', 'user_id', 'created_at'],
+                include: {
                     model: User,
-                    attributes: ["name"],
-                },
-            ],
-        });
-        const projects = projectData.map((project) => project.get({ plain: true }));
-
-        res.render("homepage", {
-            projects,
-            logged_in: req.session.logged_in
-        });
-    } catch (err) {
+                    attributes: ['username']
+            }
+        },
+        {
+            model: User,
+            attributes: ['username']
+        }
+        ]
+    })
+    .then(postData => {
+        const posts = postData.map(post => post.get({ plain: true }));
+        res.render('homepage', { posts, loggedIn: req.session.loggedIn })
+    })
+    .catch(err => {
         res.status(500).json(err);
-    }
+    })
 });
 
-router.get("/project/:id", async (req, res) => {
-    try {
-        const projectData = await Project.findByPk(req.params.id, {
-            include: [
-                {
-                    model: User, 
-                    attributes: ["name"],
-                },
-            ],
-        });
-        const project = projectData.get({ plain: true });
-
-        res.render("project", {
-            ...project, 
-            logged_in: req.session.logged_in
-        });
-    } catch (err) {
+router.get('/post/:id', (req, res) => {
+    Post.findOne({
+        where: {
+            id: req.params.id
+        },
+        attributes: ['id', 'title', 'body', 'created_at'],
+        include: [
+            {
+                model: Comment, 
+                attributes: ['id', 'comment_text', 'post_id', 'user_id', 'created_at'],
+                include: {
+                    model: User,
+                    attributes: ['username']
+            }
+        },
+        {
+            model: User,
+            attributes: ['username']
+        }
+        ]
+    })
+    .then(postData => {
+        if(!postData) {
+            res.status(404).json({ message: 'No post found with this id' });
+            return;
+        }
+        const post = postData.get({ plain: true });
+        res.render('single-post', { post, loggedIn: req.session.loggedIn });
+    })
+    .catch(err => {
         res.status(500).json(err);
-    }
+    });
 });
 
-router.get("/profile", withAuth, async (req, res) => {
-    try {
-        const userData = await User.findByPk(req.session.user_id, {
-            attributes: { exclude: ["password"] },
-            include: [{ model: Project }],
-        });
-        const user = userData.get({ plain: true });
-
-        res.render("profile", {
-            ...user,
-            logged_in: true
-        });
-    } catch (err) {
-        res.status(500).json(err);
-    }
-});
-
-router.get("/login", (req, res) => {
-    if (req.session.logged_in) {
-        res.redirect("/profile");
+router.get('/login', (req, res) => {
+    if(req.session.loggedIn) {
+        res.redirect('/');
         return;
     }
-    res.render("login");
+    res.render('login');
 });
 
 module.exports = router;

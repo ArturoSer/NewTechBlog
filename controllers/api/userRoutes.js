@@ -1,36 +1,61 @@
 const router = require("express").Router();
-const { User, Project } = require("../../models");
+const { User } = require("../../models");
 
-router.post("/", async (req, res) => {
-    try {
-        const userData = await User.create(req.body);
+router.get('/', (req, res) => {
+    User.findAll({
+        attributes: { exclude: ['password'] }
+    })
+    .then(userData => res.json(userData))
+    .catch(err => {
+        res.status(500).json(err);
+    });
+});
+
+router.post('/', (req, res) => {
+    User.create({
+        username: req.body.username,
+        password: req.body.password
+    })
+  .then(userData => {
+    req.session.save(() => {
+        req.session.user_id = userData.id;
+        req.session.username = userData.username;
+        req.session.loggedIn = true;
+
+        res.json(userData);
+    });
+    });
+});
+
+router.post('/login', (req, res) => {
+    User.findOne({
+        where: {
+            username: req.body.username
+        }
+    })
+    .then(userData => {
+        if(!userData) {
+            res.status(400).json({ message: 'No user with that username!' });
+            return;
+        }
 
         req.session.save(() => {
             req.session.user_id = userData.id;
-            req.session.logged_in = true;
+            req.session.username = userData.username;
+            req.session.loggedIn = true;
 
-            res.status(200).json(userData);
+            res.json({ user: userData, message: 'You are now logged in!' });
         });
-    } catch (err) {
-        res.status(400).json(err);
-    }
+    });
 });
 
-router.delete("/:id", withAuth, async (req, res) => {
-    try {
-        const projectData = await Project.destroy({
-            where: {
-                id: req.params.id,
-                user_id: req.session.user_id,
-            },
+router.post('/logout', (req, res) => {
+    if(req.session.loggedIn) {
+        req.session.destroy(() => {
+            res.status(204).end();
         });
-        if (!projectData) {
-            res.status(404).json({ message: "Nothing Found with this ID" });
-            return;
-        }
-        res.status(200).json(projectData);
-    } catch (err) {
-        res.status(500).json(err);
+    } else {
+        res.status(404).end();
     }
 });
 

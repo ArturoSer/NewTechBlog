@@ -1,44 +1,48 @@
-const loginFormhandler = async (even) => {
-    event.preventDefault();
+async function signupFormHandler(e) {
+    e.preventDefualt();
 
-    const email = document.querySelector("#email-login").value.trim();
-    const password = document.querySelector("#password-login").value.trim();
+    const username = document.getElementById('username-signup').value.trim();
+    const password = document.getElementById('password-signup').value.trim();
 
-    if (email && password) {
-        const response = await fetch("/api/users/login", {
-            method: "POST",
-            body: JSON.stringify({ email, password }),
-            headers: { "content-type": "application/json" },
+    if(username && password) {
+        const response = await fetch('/api/users', {
+            method: 'POST',
+            body: JSON.stringify({
+                username, 
+                password
+            }),
+            headers: { 'Content-type': 'application/json'}
         });
-        
-        if (response.ok) {
-            document.location.replace("/profile");
+
+        if(response.ok) {
+            document.location.replace('/dashboard');
         } else {
             alert(response.statusText);
         }
-    }
-}; 
+    };
+};
 
-const signupFormHandler = async (event) => {
-    event.preventDefault();
+async function loginFormHandler(e) {
+    e.preventDefualt();
 
-    const name = document.querySelector("#name-signup").value.trim();
-    const email = document.querySelector("#email-signup").value.trim();
-    const password = document.querySelector("#passowrd-signup").value.trim();
+    const username = document.getElementById('username-login').value.trim();
+    const password = document.getElementById('password-login').value.trim();
 
-    if (name && email && password) {
-        const response = await fetch("/api/users", {
-            method: "POST",
-            body: JSON.stringify({ name, email, password }),
-            headers: { "content-type": "application/json" },
+    if(username && password) {
+        const response = await fetch('/api/users/login', {
+            method: 'POST',
+            body: JSON.stringify({
+                username, 
+                password
+            }),
+            headers: { 'Content-type': 'application/json' }
         });
-         
-        if (response.ok) {
-            document.location.replace("/profile");
+        if(response.ok) {
+            document.location.replace('/dashboard');
         } else {
             alert(response.statusText);
         }
-    }
+    };
 };
 
 document
